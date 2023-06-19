@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+// Definindo as funções de pertinência para o nível do tanque
+float baixo(float x) {
+ if (x <= 0) return 1;
+ else if (x <= 20) return (20 - x) / 20;
+ else return 0;
+}
+
+float medio(float x) {
+ if (x <= 15 || x >= 50) return 0;
+ else if (x <= 30) return (x - 15) / 15;
+ else return (50 - x) / 20;
+}
+
+float alto(float x) {
+ if (x <= 40) return 0;
+ else if (x <= 70) return (x - 40) / 30;
+ else return 1;
+}
+
+// Definindo as funções de pertinência para o fluxo de entrada de líquido
+float fluxo_baixo(float x) {
+ if (x <= 0) return 1;
+ else if (x <= 5) return x / 5;
+ else return 0;
+}
+
+float fluxo_medio(float x) {
+ if (x <= 3 || x >= 8) return 0;
+ else if (x <= 5) return (x - 3) / 2;
+ else return (8 - x) / 3;
+}
+
+float fluxo_alto(float x) {
+ if (x <= 6) return 0;
+ else if (x <= 10) return (x - 6) / 4;
+ else return 1;
+}
+
+// Definindo as regras fuzzy
+float rule1(float nivel) {
+ return fmax(baixo(nivel), fluxo_alto(nivel));
+}
+
+float rule2(float nivel) {
+ return fmax(medio(nivel), fluxo_medio(nivel));
+}
+
+float rule3(float nivel) {
+ return fmax(alto(nivel), fluxo_baixo(nivel));
+}
+
+// Executando o sistema de controle fuzzy com um nível de tanque de 50%
+float execute_fuzzy(float nivel) {
+ float fluxo, max_fluxo;
+ max_fluxo = fmax(fmax(rule1(nivel), rule2(nivel)), rule3(nivel));
+ fluxo = (5 * rule1(nivel) + 5 * rule2(nivel) + 5 * rule3(nivel)) / max_fluxo;
+ return fluxo;
+}
+
+// Função principal
+int main() {
+ float nivel = 50.0;
+ float fluxo = execute_fuzzy(nivel);
+ // Obtendo o resultado do fluxo de entrada de líquido
+ printf("Fluxo de entrada de liquido: %.2f\n", fluxo);
+ return 0;
+}
